@@ -2,9 +2,24 @@ source="airline_tweets.csv" host="tweets" index="hackathon_20160406" sourcetype=
 | rex field=text max_match=100 "@(?P<Airline>\w+)" 
 | eval Airline = lower(Airline)
 | table _time, Airline, tweet_id,name,tweet_location,retweet_count,text 
-| mvexpand Airline 
-| eval Airline = if(Airline == "americanairlnes", "americanairlines", Airline)
-| dedup Airline 
-| table Airline
+| replace " " WITH "" IN text
 
-| search Airline="*americanair" OR Airline="*jetblue" OR Airline="*virginamerica" OR Airline="*united" OR Airline="*usairways" OR Airline="*southwestair" NOT Airline=usairwaysmobile
+| eval Airline = if(Airline == "americanairlnes", "americanairlines", Airline)
+
+| eval Airline = case(
+searchmatch("Airline=*usairways"), "usairways", 
+searchmatch("Airline=*americanair*"), "americanair", 
+searchmatch("Airline=*jetblue"), "jetblue", 
+searchmatch("Airline=*virginamerica"), "virginamerica", 
+searchmatch("Airline=*united"), "united", 
+searchmatch("Airline=*usairways"), "usairways", 
+searchmatch("Airline=*southwestair"), "southwestair", 
+1==1, 0)
+
+| fillnull text value=0
+| eval sentiment = if(Airline == 0 AND text == 0, "Neutral", NA)
+
+| stats first(*) as * by text
+| fields - tweet_id
+| rex field=text mode=sed "y/#/ /"
+| rex field=text mode=sed max_match=1000000 "s/(\.|#)?@\w+//g"
