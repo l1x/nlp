@@ -1,3 +1,5 @@
 nlp-hackaton/
 .ipynb_checkpoints/
 .Python
+.Rdata
+.Rhistory
