@@ -11,7 +11,7 @@ else
   virtualenv nlp-hackaton
 fi
 source nlp-hackaton/bin/activate
-pip install nltk scipy ipython numpy jupyter matplotlib pandas seaborn scikit-learn sympy plotly --upgrade
+pip install nltk scipy ipython numpy jupyter matplotlib pandas seaborn scikit-learn sympy plotly wordcloud --upgrade
 python -m nltk.downloader stopwords
 #pip install --upgrade https://storage.googleapis.com/tensorflow/mac/tensorflow-0.6.0-py2-none-any.whl
 jupyter notebook
